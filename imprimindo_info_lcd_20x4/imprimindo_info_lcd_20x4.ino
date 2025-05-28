@@ -1,11 +1,11 @@
 #include <dht.h>
-
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include <NewPing.h>
 
 // LCD I2C
 LiquidCrystal_I2C lcd(0x27, 20, 4);
+
 #define pinoUmidadeSolo A0  // Sensor de umidade do solo
 #define pino5V 7            // Alimentação do sensor de solo
 #define pinoDHT 5           // Pino de dados do DHT22
@@ -16,6 +16,9 @@ int ValAnalogIn;
 
 void setup() {
   Serial.begin(9600);
+  lcd.init();
+  lcd.backlight();
+
   pinMode(pino5V, OUTPUT);
   digitalWrite(pino5V, LOW); // Sensor de solo desligado inicialmente
 }
@@ -42,13 +45,18 @@ void loop() {
 
   // --- Leitura do DHT22 ---
   int chk = DHT.read22(pinoDHT);
+  float umidadeAr = 0;
+  float temperatura = 0;
   if (chk == DHTLIB_OK) {
+    umidadeAr = DHT.humidity;
+    temperatura = DHT.temperature;
+
     Serial.print("Umidade do ar: ");
-    Serial.print(DHT.humidity);
+    Serial.print(umidadeAr);
     Serial.println("%");
 
     Serial.print("Temperatura: ");
-    Serial.print(DHT.temperature);
+    Serial.print(temperatura);
     Serial.println(" °C");
   } else {
     Serial.print("Erro ao ler DHT22: ");
@@ -81,18 +89,27 @@ void loop() {
   Serial.println(qualidadeDoAr);
 
   Serial.println("====================================\n");
+
+  // --- Atualiza o LCD ---
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Solo: ");
+  lcd.print(umidadeSolo);
+  lcd.print("%");
+
+  lcd.setCursor(0, 1);
+  lcd.print("Ar: ");
+  lcd.print(umidadeAr, 1);
+  lcd.print("% ");
+  lcd.print(temperatura, 1);
+  lcd.print((char)223); // símbolo de grau
+  lcd.print("C");
+
+  lcd.setCursor(0, 2);
+  lcd.print("Qualid. Ar: ");
+
+  lcd.setCursor(0, 3);
+  lcd.print(qualidadeDoAr);
+
   delay(2000); // Aguarda 2 segundos antes da próxima leitura
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
