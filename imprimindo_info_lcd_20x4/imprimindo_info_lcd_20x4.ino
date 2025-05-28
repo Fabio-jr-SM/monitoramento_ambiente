@@ -93,7 +93,7 @@ void loop() {
   // --- Atualiza o LCD ---
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Solo: ");
+  lcd.print("Umidade do Solo: ");
   lcd.print(umidadeSolo);
   lcd.print("%");
 
