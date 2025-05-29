@@ -1,3 +1,4 @@
+
 # 📘 Documentação Técnica: Monitoramento Ambiental com Arduino
 
 ## 🌿 Visão Geral
@@ -41,7 +42,7 @@ Para o funcionamento correto do projeto, é necessário instalar as seguintes bi
    * Vá em **Sketch > Incluir Biblioteca > Gerenciar Bibliotecas...**
    * Procure por **DHTlib** e instale a biblioteca criada por Rob Tillaart.
 
-2. **LiquidCrystal\_I2C**: Para controle do display LCD via I2C.
+2. **LiquidCrystal_I2C**: Para controle do display LCD via I2C.
 
    * Disponível em: [Instructables - How to Use I2C Serial LCD 20X4](https://www.instructables.com/How-to-Use-I2C-Serial-LCD-20X4-Yellow-Backlight/)
 
@@ -52,7 +53,7 @@ Para o funcionamento correto do projeto, é necessário instalar as seguintes bi
 1. Monte o circuito conectando os sensores e o display LCD conforme o esquema de conexões acima.
 2. Carregue o código fornecido na placa Arduino UNO através da Arduino IDE.
 3. Abra o **Monitor Serial** com baudrate de 9600 para visualizar os dados em tempo real.
-4. Os dados também serão exibidos no display LCD, atualizados a cada 2 segundos.([fermarc.com][3])
+4. Os dados também serão exibidos no display LCD, atualizados a cada 2 segundos.
 
 ---
 
@@ -74,3 +75,68 @@ Qualidade do ar (MQ135) - Valor bruto: 187 - Classificação: Boa
 * **Calibração do MQ135**: A classificação da qualidade do ar é aproximada e pode variar conforme o ambiente. Para medições precisas, é necessário calibrar o sensor com gases específicos.
 * **Umidade do Solo**: Os valores podem variar com o tipo de solo. Ajuste a função `map()` no código conforme necessário.
 * **Alimentação do Sensor de Solo**: O pino 7 é utilizado para controlar a alimentação do sensor de umidade do solo, desligando-o quando não está em uso para economizar energia e prolongar sua vida útil.
+
+---
+
+## ⚙️ Funcionamento dos Componentes
+
+### 🔸 Sensor de Umidade do Solo
+
+Este sensor funciona medindo a **resistência elétrica** entre duas hastes metálicas inseridas no solo. Quando o solo está seco, a resistência entre as hastes é alta; quando está úmido, a resistência é baixa, permitindo maior passagem de corrente elétrica.
+
+- **Tipo:** Sensor resistivo analógico
+- **Saída:** Tensão proporcional à umidade
+- **Considerações:**  
+  - Sensores resistivos se desgastam com o tempo devido à oxidação.  
+  - A alimentação controlada pelo pino digital 7 ajuda a prolongar sua vida útil.
+
+---
+
+### 🔸 Sensor DHT22 (AM2302)
+
+O DHT22 é um sensor digital que combina um termistor e um sensor capacitivo de umidade. Ele possui um chip embutido que realiza as conversões analógicas para digitais e envia os dados já prontos via protocolo de 1 fio (one-wire).
+
+- **Medições:**  
+  - Temperatura (−40 a +80 °C com precisão de ±0,5 °C)  
+  - Umidade relativa (0–100% com precisão de ±2–5%)
+- **Intervalo de leitura:** 2 segundos
+- **Saída:** Digital (formato binário específico)
+
+---
+
+### 🔸 Sensor MQ135
+
+Este sensor detecta gases no ambiente com base em um elemento sensor aquecido que altera sua resistência em contato com gases como CO₂, amônia, álcool, benzeno e fumaça. A resistência do sensor varia conforme a concentração do gás, gerando uma saída analógica.
+
+- **Gases detectáveis:** CO₂, amônia (NH₃), álcool, benzeno, fumaça e outros poluentes
+- **Tensão de operação:** 5V
+- **Saída:** Analógica (varia com concentração de gases)
+- **Considerações:**  
+  - Requer **pré-aquecimento** de alguns minutos para estabilizar.  
+  - Para maior precisão, deve-se calibrar com concentrações conhecidas dos gases.
+
+---
+
+### 🔸 Arduino UNO
+
+O Arduino UNO é a unidade de controle central do projeto. Baseado no microcontrolador ATmega328P, ele lê os sensores, processa os dados e atualiza a interface visual (display LCD) e o Monitor Serial.
+
+- **Microcontrolador:** ATmega328P
+- **Tensão de operação:** 5V
+- **Portas disponíveis:**  
+  - 14 digitais (6 com PWM)  
+  - 6 analógicas (A0–A5)  
+- **Comunicação:** USB, UART, I2C, SPI
+
+---
+
+### 🔸 Display LCD I2C 20x4
+
+O display LCD 20x4 permite a exibição de até 4 linhas com 20 caracteres cada. Ele é adaptado com um **módulo I2C**, que reduz os pinos de controle de 16 para apenas 2 (SDA e SCL), facilitando a conexão com o Arduino.
+
+- **Interface:** I2C (padrão: SDA em A4, SCL em A5 no Arduino UNO)
+- **Endereço I2C padrão:** `0x27` ou `0x3F` (pode variar)
+- **Vantagens:**  
+  - Ocupa poucos pinos  
+  - Ideal para projetos com múltiplos sensores  
+  - Fácil de integrar com a biblioteca `LiquidCrystal_I2C`
